@@ -102,12 +102,12 @@ def extractBCsUMI(read):
     linkers = positionLinker(readPart)
     if linkers is not None and len(linkers) == 4:
         bcsU = getBCs(read, linkers)
-        bc1, bc2, bc3, umi = correctBC(bcsU[0]), correctBC(bcsU[1]), correctBC(bcsU[2]), bcsU[3]
-        STATSCOUNTER["extracted"] += 1
-        return (bc1, bc2, bc3, umi)
+        if bcsU is not None:
+           bc1, bc2, bc3, umi = correctBC(bcsU[0]), correctBC(bcsU[1]), correctBC(bcsU[2]), bcsU[3]
+           STATSCOUNTER["extracted"] += 1
+           return formatBC(bc1, bc2, bc3, umi)
 
-def extract(read):
-    bc1, bc2, bc3, umi = extractBCsUMI(read)
+def formatBC(bc1, bc2, bc3, umi):
     if bc1 is not None and bc2 is not None and bc3 is not None and umi is not None:
        return "BC:"+bc1+bc2+bc3+":UMI:"+umi
 

@@ -16,13 +16,18 @@ def mergeUmiFiles(read1file, read2file, outmerge, outstats):
         ignore = f1.next()
         for l1,l2 in izip(f1,f2):
            if lineNr % 4 == 0:
-              bcu = umi.extract(l1.strip())
+              try:
+                 bcu = umi.extractBCsUMI(l1.strip())
+              except:
+                 print("error in line: "+str(lineNr)+" "+read1file+" extract UMI\n"+l1.strip())
+                 raise
               if bcu is not None:
                   l2 = l2.strip() + ":" + bcu + "\n"
               else:
                   l2 = l2.strip() + ":" + l1
            lineNr += 1
            o.write(l2)
+        o.write(f2.next())
     o.close()
     with open(outstats, "w") as o:
          o.write(umi.writeStatsCounter())
