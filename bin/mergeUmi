@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+
+import argparse
+from surecellumi.mergefq import mergeUmiFiles
+
+parser = argparse.ArgumentParser(description='Merge 2 PE fastq files. Read1 has SureCell UMI.')
+parser.add_argument('--r1', help='path to r1.fq.gz')
+parser.add_argument('--r2', help='path to r2.fq.gz')
+parser.add_argument('--outfq', help='path to resulting fq')
+parser.add_argument('--outstat', help='path to result stats file')
+
+
+args = parser.parse_args()
+if args.r1 and args.r2 and args.outfq and args.outstat:
+   mergeUmiFiles(args.r1, args.r2, args.outfq, args.outstat)   
+else:
+   parser.print_help()
