@@ -32,8 +32,8 @@ def test_findLinker():
     assert findLinker(insert, llinker, 0.05) == (6, 43, 0, 36, 36, 1)
     perfect = "GGGGGG" + "TAGCCATCGCATTGCAGCAGCTACCTCTGAGCTGAA" + "GGGGGG"
     assert findLinker(perfect, llinker, 0.05) == (6, 42, 0, 36, 36, 0)
-    perfect = "GGGGGG" + "TAGCCATCGCATTGCAGCAGCTACCTCTGAGCTGAA" + "GGGGGG"
-    assert findLinker(perfect, llinker, 0.05) == (6, 42, 0, 36, 36, 0)
+    mutEnd1 = "GGGGGG" + "TAGCCATCGCATTGAAGCAGCTACCTCTGAGCTGAA" + "GGGGGG"
+    assert findLinker(mutEnd1, llinker, 0.05) == (6, 42, 0, 36, 35, 1)
     perfect = "GGGGGG" + "TAGCCATCGCATTGCAGCAGCTACCTCTGAGCTGAA" + "GGGGGG"
     assert findLinker(perfect, llinker, 0.05) == (6, 42, 0, 36, 36, 0)
 
@@ -41,10 +41,14 @@ def test_findLinker():
 def test_positionLinker():
         # NNNNNNTAGCCATCGCATTGCNNNNNNTACCTCTGAGCTGAANNNNNNACGNNNNNNNNGACTTTTTTTTTTTT
     r1 = "AAAAAATAGCCATCGCATTGCGGGGGGTACCTCTGAGCTGAACCCCCCACGCCCCCCCCGACTTTTTTTTTTTT"
-    
     assert positionLinker(r1[PS:PE], l1, l2, llinker) == (1, 16, 22, 37)
     r2 = "AAAAAAATAGCCATCGCATTGCGGGGGGTACCTCTGAGCTGAACCCCCCACGCCCCCCCCGACTTTTTTTTTTTT"
     assert positionLinker(r2[PS:PE], l1, l2, llinker) == (2, 17, 23, 38)
+    r3 = "AAAAAAATAGCCATCGCATTGGGGGGGGTACCTCTGAGCTGAACCCCCCACGCCCCCCCCGACTTTTTTTTTTTT" #mutation at end of linker1
+    assert positionLinker(r3[PS:PE], l1, l2, llinker) == (2, 17, 23, 38)
+    r4 = "AAAAAAATAGCCATCGCATTGCGGGGGGTACCTCTGAGCTGATCCCCCCACGCCCCCCCCGACTTTTTTTTTTTT" #mutation at end of linker2
+    assert positionLinker(r4[PS:PE], l1, l2, llinker) == (2, 17, 23, 38)
+    
 # ANNNNNNTAGCCATCGCATTGCNNNNNNTACCTCTGAGCTGAANNNNNNACGNNNNNNNNGACTTTTTTTTTTT
 # CTNNNNNNTAGCCATCGCATTGCNNNNNNTACCTCTGAGCTGAANNNNNNACGNNNNNNNNGACTTTTTTTTTT
 # GCANNNNNNTAGCCATCGCATTGCNNNNNNTACCTCTGAGCTGAANNNNNNACGNNNNNNNNGACTTTTTTTTT
@@ -57,8 +61,7 @@ def test_getBCs():
     r1 = "AAAAAATAGCCATCGCATTGCGGGGGGTACCTCTGAGCTGAACCCCCCACGCCCCCCCCGACTTTTTTTTTTTT"
     assert getBCs(r1, (1, 16, 22, 37)) == bcm
     assert getBCs("GG" + r1, (3, 18, 24, 39)) == bcm
-
-
+   
 def test_correctBC():
     assert "CGGTCC" == correctBC("CGGTCC")
     assert "CGGTCC" == correctBC("CGGACC")

@@ -12,7 +12,7 @@ def op(path):
     else:
        return open(path, "r")
 
-def mergeUmiFiles(read1file, read2file, outmerge, outstats, ll1, ll2, llinker):
+def mergeUmiFiles(read1file, read2file, outmerge, outstats, outbc, ll1, ll2, llinker):
     logging.info("extracting umis with: "+ll1+" "+ll2+" "+llinker)
     lineNr = 0
     with op(read1file) as f1, op(read2file) as f2, open(outmerge, "w") as o:
@@ -35,8 +35,11 @@ def mergeUmiFiles(read1file, read2file, outmerge, outstats, ll1, ll2, llinker):
         o.write(f2.next())
     o.close()
     logging.info("extracted last umi lineNr: "+str(lineNr+1))
-    logging.info("\nstats:\n"+umi.writeStatsCounter())
+    logging.info("extractstats:\n"+umi.writeExtractCounter())
+    logging.info("bcstats:\n"+umi.writeBCCounter())
     with open(outstats, "w") as o:
-         o.write(umi.writeStatsCounter())
+         o.write(umi.writeExtractCounter())
+    with open(outbc, "w") as o:
+         o.write(umi.writeBCCounter())
     o.close()
 

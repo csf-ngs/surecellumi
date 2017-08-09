@@ -5,6 +5,11 @@ from cutadapt.align import Aligner
 from cutadapt.adapters import ANYWHERE
 
 
+## extracts the barcodes and the UMI ##
+## 2 step cutadapt to make sure that we find the linker positions - could be improved 
+## could not get BWApy to work a API level wrapper around an aligner returning a CIGAR string would be much better
+## 
+
 PS = 5
 PE = 48
 L1A = "TAGCCATCGCATTGC"
@@ -34,8 +39,10 @@ def loadBarcodes():
 
 BARCODES = loadBarcodes()
 BARCODESMAP = dict(zip(BARCODES, BARCODES))
-STATSCOUNTER = {"noLL": 0, "noL1orL2": 0,
+EXTRACTCOUNTER = {"noLL": 0, "noL1orL2": 0,
                 "L1not6fromL2": 0, "noACGorGAC": 0, "extracted": 0}
+BCCOUNTER = {"exact": 0, "mm1": 0, "none": 0}
+
 
 # mutation rate full linker: length is 6 + 15+6+15 + 6 = 48: 0.05
 # mutation rate linker part: 0.1
@@ -57,25 +64,31 @@ def findLinker(readPart, linker, mut):
     if matches + muts >= linkerLen:  # mutations, deletions
         return l
 
-# returns None or (ls,le) => for stats
-# tuple: (l1s,l1e,l2s,l2e)
-# check l1e + 6 == l2s
 
+## a mutation at the end is indistinguishable from a deletion we simply
+## count it as a mutation because thats more likley
+def correctLinkerLength(linker, rs, re, qs, qe, matches, mm):
+    if mm == 1 and len(linker) - 1 == re - rs:
+        return (rs, re + 1, qs, qe, matches, mm)
+    else:
+        return (rs, re, qs, qe, matches, mm)
 
 def positionLinker(readPart, ll1, ll2, llinker):
     full = findLinker(readPart, llinker, 0.05)
     if full is not None:
         l1 = findLinker(readPart, ll1, 0.1)
         l2 = findLinker(readPart, ll2, 0.1)
+        l1 = correctLinkerLength(ll1, *l1)
+        l2 = correctLinkerLength(ll2, *l2)
         if l1 is not None and l2 is not None:
             if l1[1] + 6 == l2[0]:
                 return (l1[0], l1[1], l2[0], l2[1])
             else:
-                STATSCOUNTER["L1not6fromL2"] += 1
+                EXTRACTCOUNTER["L1not6fromL2"] += 1
         else:
-            STATSCOUNTER["noL1orL2"] += 1
+            EXTRACTCOUNTER["noL1orL2"] += 1
     else:
-        STATSCOUNTER["noLL"] += 1
+        EXTRACTCOUNTER["noLL"] += 1
 
 
 def getUMI(read, linker2End):
@@ -85,7 +98,7 @@ def getUMI(read, linker2End):
         umi = read[(linker2End + 9):(linker2End + 17)]
         return umi
     else:
-        STATSCOUNTER["noACGorGAC"] += 1
+        EXTRACTCOUNTER["noACGorGAC"] += 1
 
 
 def getBCs(read, linkers):
@@ -103,9 +116,11 @@ def getBCs(read, linkers):
 
 def correctBC(bc):
     if BARCODESMAP.get(bc) is not None:
+        BCCOUNTER['exact'] += 1
         return bc
     distances = filter(lambda m: distance.levenshtein(bc, m) <= 1, BARCODES)
     if len(distances) == 1:
+        BCCOUNTER['mm1'] += 1
         return distances[0]
 
 
@@ -116,22 +131,24 @@ def extractBCsUMI(read, ll1, ll2, llinker):
         bcsU = getBCs(read, linkers)
         if bcsU is not None:
            bc1, bc2, bc3, umi = correctBC(bcsU[0]), correctBC(bcsU[1]), correctBC(bcsU[2]), bcsU[3]
-           STATSCOUNTER["extracted"] += 1
+           EXTRACTCOUNTER["extracted"] += 1
            return formatBC(bc1, bc2, bc3, umi)
 
 def formatBC(bc1, bc2, bc3, umi):
     if bc1 is not None and bc2 is not None and bc3 is not None and umi is not None:
        return "BC:"+bc1+bc2+bc3+":UMI:"+umi
+    
+def writeExtractCounter():
+    return writeCounter(EXTRACTCOUNTER)
 
+def writeBCCounter():
+    return writeCounter(BCCOUNTER)
 
-def writeStatsCounter():
+def writeCounter(counter):
     result = ""
-    for k,v in sorted(STATSCOUNTER.items()):
+    for k,v in sorted(counter.items()):
         result += k+"\t"+str(v)+"\n"
     return result
-
-
-
 
 
 
