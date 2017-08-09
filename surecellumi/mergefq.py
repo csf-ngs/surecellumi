@@ -24,7 +24,9 @@ def mergeUmiFiles(read1file, read2file, outmerge, outstats, outbc, outprime5, ll
               try:
                  bcu = umi.extractBCsUMI(l1.strip(), ll1, ll2, llinker)
               except:
-                 print("error in line: "+str(lineNr)+" "+read1file+" extract UMI\n"+l1.strip())
+                 err = "error in line: "+str(lineNr)+" "+read1file+" extract UMI\n"+l1.strip()
+                 print err
+                 logging.error(err)
                  raise
               if bcu is not None:
                   l2 = l2.strip() + ":" + bcu + "\n"

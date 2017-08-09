@@ -80,7 +80,6 @@ def positionLinker(readPart, ll1, ll2, llinker):
     if full is not None:
         l1 = findLinker(readPart, ll1, 0.1)
         l2 = findLinker(readPart, ll2, 0.1)
-        print(l1, l2)
         l1 = correctLinkerLength(ll1, *l1)
         l2 = correctLinkerLength(ll2, *l2)
         if l1 is not None and l2 is not None:

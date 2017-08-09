@@ -16,7 +16,7 @@ required.add_argument('--outextract', help='path to result stats file', required
 required.add_argument('--outbc', help='path to bc stats file', required=True)
 required.add_argument('--outprime5', help='path to prime 5 stats file', required=True)
 optional.add_argument('--linker1name', help='name of linker1: L1A=TAGCCATCGCATTGC', default="L1A")
-optional.add_argument('--linker2name', help='name of linker2: L2A=TACCTCTGAGCTGAA, L2B=TACCTCTTATCTCTT', default="L2B")
+optional.add_argument('--linker2name', help='name of linker2: L2A=TACCTCTGAGCTGAA, L2B=TACCTCTTATCTCTT', default="L2A")
 parser._action_groups.append(optional) # added this line
 
 
