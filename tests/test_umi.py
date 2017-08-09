@@ -41,13 +41,13 @@ def test_findLinker():
 def test_positionLinker():
         # NNNNNNTAGCCATCGCATTGCNNNNNNTACCTCTGAGCTGAANNNNNNACGNNNNNNNNGACTTTTTTTTTTTT
     r1 = "AAAAAATAGCCATCGCATTGCGGGGGGTACCTCTGAGCTGAACCCCCCACGCCCCCCCCGACTTTTTTTTTTTT"
-    assert positionLinker(r1[PS:PE], l1, l2, llinker) == (1, 16, 22, 37)
+    assert positionLinker(r1[PS:PE], l1, l2, llinker) == (6, 21, 27, 42)
     r2 = "AAAAAAATAGCCATCGCATTGCGGGGGGTACCTCTGAGCTGAACCCCCCACGCCCCCCCCGACTTTTTTTTTTTT"
-    assert positionLinker(r2[PS:PE], l1, l2, llinker) == (2, 17, 23, 38)
+    assert positionLinker(r2[PS:PE], l1, l2, llinker) == (7, 22, 28, 43)
     r3 = "AAAAAAATAGCCATCGCATTGGGGGGGGTACCTCTGAGCTGAACCCCCCACGCCCCCCCCGACTTTTTTTTTTTT" #mutation at end of linker1
-    assert positionLinker(r3[PS:PE], l1, l2, llinker) == (2, 17, 23, 38)
+    assert positionLinker(r3[PS:PE], l1, l2, llinker) == (7, 22, 28, 43)
     r4 = "AAAAAAATAGCCATCGCATTGCGGGGGGTACCTCTGAGCTGATCCCCCCACGCCCCCCCCGACTTTTTTTTTTTT" #mutation at end of linker2
-    assert positionLinker(r4[PS:PE], l1, l2, llinker) == (2, 17, 23, 38)
+    assert positionLinker(r4[PS:PE], l1, l2, llinker) == (7, 22, 28, 43)
     
 # ANNNNNNTAGCCATCGCATTGCNNNNNNTACCTCTGAGCTGAANNNNNNACGNNNNNNNNGACTTTTTTTTTTT
 # CTNNNNNNTAGCCATCGCATTGCNNNNNNTACCTCTGAGCTGAANNNNNNACGNNNNNNNNGACTTTTTTTTTT
@@ -59,8 +59,8 @@ def test_positionLinker():
 def test_getBCs():
     bcm = ("AAAAAA", "GGGGGG", "CCCCCC", "CCCCCCCC")
     r1 = "AAAAAATAGCCATCGCATTGCGGGGGGTACCTCTGAGCTGAACCCCCCACGCCCCCCCCGACTTTTTTTTTTTT"
-    assert getBCs(r1, (1, 16, 22, 37)) == bcm
-    assert getBCs("GG" + r1, (3, 18, 24, 39)) == bcm
+    assert getBCs(r1, (6, 21, 27, 42)) == bcm
+    assert getBCs("GG" + r1, (8, 23, 29, 44)) == bcm
    
 def test_correctBC():
     assert "CGGTCC" == correctBC("CGGTCC")

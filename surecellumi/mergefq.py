@@ -12,6 +12,13 @@ def op(path):
     else:
        return open(path, "r")
 
+## currently we simply cut off the last two letters (/2)
+def truncateName(name):
+    if name.endswith("\2"):
+       return name[:-2]
+    else:
+       return name
+
 def mergeUmiFiles(read1file, read2file, outmerge, outstats, outbc, outprime5, ll1, ll2, llinker):
     logging.info("extracting umis with: "+ll1+" "+ll2+" "+llinker)
     lineNr = 0
@@ -29,7 +36,7 @@ def mergeUmiFiles(read1file, read2file, outmerge, outstats, outbc, outprime5, ll
                  logging.error(err)
                  raise
               if bcu is not None:
-                  l2 = l2.strip() + ":" + bcu + "\n"
+                  l2 = truncateName(l2.strip()) + ":" + bcu + "\n"
               else:
                   l2 = l2.strip() + ":" + l1
            lineNr += 1
