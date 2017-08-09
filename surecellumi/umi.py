@@ -10,7 +10,7 @@ from cutadapt.adapters import ANYWHERE
 ## could not get BWApy to work a API level wrapper around an aligner returning a CIGAR string would be much better
 ## 
 
-PS = 5
+PS = 0 
 PE = 48
 L1A = "TAGCCATCGCATTGC"
 L2A = "TACCTCTGAGCTGAA"
@@ -41,7 +41,7 @@ def loadBarcodes():
 
 BARCODES = loadBarcodes()
 BARCODESMAP = dict(zip(BARCODES, BARCODES))
-EXTRACTCOUNTER = {"noLL": 0, "noL1orL2": 0,
+EXTRACTCOUNTER = {"noLL": 0, "noL1orL2": 0, "prime3small": 0,
                 "L1not6fromL2": 0, "noACGorGAC": 0, "extracted": 0}
 BCCOUNTER = {"exact": 0, "mm1": 0, "none": 0}
 PRIME5COUNTER = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0}
@@ -80,11 +80,14 @@ def positionLinker(readPart, ll1, ll2, llinker):
     if full is not None:
         l1 = findLinker(readPart, ll1, 0.1)
         l2 = findLinker(readPart, ll2, 0.1)
-        l1 = correctLinkerLength(ll1, *l1)
-        l2 = correctLinkerLength(ll2, *l2)
         if l1 is not None and l2 is not None:
+            l1 = correctLinkerLength(ll1, *l1)
+            l2 = correctLinkerLength(ll2, *l2)
             if l1[1] + 6 == l2[0]:
-                return (l1[0], l1[1], l2[0], l2[1])
+                if l1[0] + PS - 6 >= 0: 
+                    return (l1[0], l1[1], l2[0], l2[1])
+                else:
+                    EXTRACTCOUNTER["prime3small"] += 1
             else:
                 EXTRACTCOUNTER["L1not6fromL2"] += 1
         else:

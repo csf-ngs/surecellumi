@@ -70,15 +70,16 @@ def test_correctBC():
 def test_data():
                                 #     TACCTCTTATCTCTT???
          #ANNNNNNTAGCCATCGCATTGCNNNNNNTACCTCTGAGCTGAANNNNNNACGNNNNNNNNGACTTTTTTTTTTT
-    r1 = "AATCCGGTAGCCATCGCATTGCTTCTTGTACCTCTTATCTCTTACCCACACCTCCCACCTCACTTTTT"
-    assert positionLinker(r1[PS:PE], l1, getLinker2("L2B"), getLLinker("L1A","L2B")) == (2, 17, 23, 38)    
-    assert getBCs(r1, (2, 17, 23, 38)) == ('ATCCGG', 'TTCTTG', 'ACCCAC', 'TCCCACCT')
+#    r1 = "AATCCGGTAGCCATCGCATTGCTTCTTGTACCTCTTATCTCTTACCCACACCTCCCACCTCACTTTTT"
+#    assert positionLinker(r1[PS:PE], l1, getLinker2("L2B"), getLLinker("L1A","L2B")) == (2, 17, 23, 38)    
+#    assert getBCs(r1, (2, 17, 23, 38)) == ('ATCCGG', 'TTCTTG', 'ACCCAC', 'TCCCACCT')
              #  AAGTAGCCATCGCATTGCAAGCCATACCTCTGAGCTGAAGCTC 
           #ANNNNNNTAGCCATCGCATTGCNNNNNNTACCTCTGAGCTGAANNNNNNACGNNNNNNNNGACTTTTTTTTTTT
-    r2 = "CTCGAAAGTAGCCATCGCATTGCAAGCCATACCTCTGAGCTGAAGCTCCCACGTCACCACAGACTTTT"
-    assert positionLinker(r2[PS:PE], l1, getLinker2("L2A"), getLLinker("L1A","L2A")) == (3, 18, 24, 39)    
-    assert getBCs(r2, (3, 18, 24, 39)) == ('CGAAAG', 'AAGCCA', 'GCTCCC', 'TCACCACA')
-    assert extractBCsUMI(r2, l1, getLinker2("L2A"), getLLinker("L1A","L2A")) == "BC:CGAAAGAAGCCAGCTCCC:UMI:TCACCACA"
-
+#    r2 = "CTCGAAAGTAGCCATCGCATTGCAAGCCATACCTCTGAGCTGAAGCTCCCACGTCACCACAGACTTTT"
+#    assert positionLinker(r2[PS:PE], l1, getLinker2("L2A"), getLLinker("L1A","L2A")) == (3, 18, 24, 39)    
+#    assert getBCs(r2, (3, 18, 24, 39)) == ('CGAAAG', 'AAGCCA', 'GCTCCC', 'TCACCACA')
+#    assert extractBCsUMI(r2, l1, getLinker2("L2A"), getLLinker("L1A","L2A")) == "BC:CGAAAGAAGCCAGCTCCC:UMI:TCACCACA"
+    r3 = "AGGTTAGCCATCGCATTGCCTTACGTTACCTCTGAGCTGAAGGATTGACGCTGCTCATGACTTTTTTT" # too far left, L1 < 7nt > L2
+    assert positionLinker(r3[PS:PE], l1, getLinker2("L2A"), getLLinker("L1A","L2A")) == None
 
 
