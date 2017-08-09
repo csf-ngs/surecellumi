@@ -14,7 +14,7 @@ def op(path):
 
 ## currently we simply cut off the last two letters (/2)
 def truncateName(name):
-    if name.endswith("\2"):
+    if name.endswith("/2"):
        return name[:-2]
     else:
        return name
@@ -38,7 +38,7 @@ def mergeUmiFiles(read1file, read2file, outmerge, outstats, outbc, outprime5, ll
               if bcu is not None:
                   l2 = truncateName(l2.strip()) + ":" + bcu + "\n"
               else:
-                  l2 = l2.strip() + ":" + l1
+                  l2 = truncateName(l2.strip()) + ":" + l1
            lineNr += 1
            o.write(l2)
         o.write(f2.next())
