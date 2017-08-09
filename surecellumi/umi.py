@@ -7,9 +7,21 @@ from cutadapt.adapters import ANYWHERE
 
 PS = 5
 PE = 48
-L1 = "TAGCCATCGCATTGC"
-L2 = "TACCTCTGAGCTGAA"
-LINKER = L1 + "NNNNNN" + L2
+L1A = "TAGCCATCGCATTGC"
+L2A = "TACCTCTGAGCTGAA"
+L2B = "TACCTCTTATCTCTT"
+L1s = { "L1A" : L1A }
+L2s = { "L2A" : L2A, "L2B" : L2B }
+
+
+def getLinker1(name):
+    return L1s[name]
+    
+def getLinker2(name):
+    return L2s[name]
+
+def getLLinker(name1, name2):
+    return getLinker1(name1)+"NNNNNN"+getLinker2(name2)
 
 
 def loadBarcodes():
@@ -50,11 +62,11 @@ def findLinker(readPart, linker, mut):
 # check l1e + 6 == l2s
 
 
-def positionLinker(readPart):
-    full = findLinker(readPart, LINKER, 0.05)
+def positionLinker(readPart, ll1, ll2, llinker):
+    full = findLinker(readPart, llinker, 0.05)
     if full is not None:
-        l1 = findLinker(readPart, L1, 0.1)
-        l2 = findLinker(readPart, L2, 0.1)
+        l1 = findLinker(readPart, ll1, 0.1)
+        l2 = findLinker(readPart, ll2, 0.1)
         if l1 is not None and l2 is not None:
             if l1[1] + 6 == l2[0]:
                 return (l1[0], l1[1], l2[0], l2[1])
@@ -97,9 +109,9 @@ def correctBC(bc):
         return distances[0]
 
 
-def extractBCsUMI(read):
+def extractBCsUMI(read, ll1, ll2, llinker):
     readPart = read[PS:PE]
-    linkers = positionLinker(readPart)
+    linkers = positionLinker(readPart, ll1, ll2, llinker)
     if linkers is not None and len(linkers) == 4:
         bcsU = getBCs(read, linkers)
         if bcsU is not None:

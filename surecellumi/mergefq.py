@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
-import gzip
+import gzip, logging
 import umi
 from itertools import izip
+
+
 
 def op(path):
     if path.endswith("gz"):
@@ -10,14 +12,17 @@ def op(path):
     else:
        return open(path, "r")
 
-def mergeUmiFiles(read1file, read2file, outmerge, outstats):
+def mergeUmiFiles(read1file, read2file, outmerge, outstats, ll1, ll2, llinker):
+    logging.info("extracting umis with: "+ll1+" "+ll2+" "+llinker)
+    lineNr = 0
     with op(read1file) as f1, op(read2file) as f2, open(outmerge, "w") as o:
-        lineNr = 0
         ignore = f1.next()
         for l1,l2 in izip(f1,f2):
+           if lineNr % 1e6 == 0:
+              logging.info("extracting umi lineNr: "+str(lineNr))
            if lineNr % 4 == 0:
               try:
-                 bcu = umi.extractBCsUMI(l1.strip())
+                 bcu = umi.extractBCsUMI(l1.strip(), ll1, ll2, llinker)
               except:
                  print("error in line: "+str(lineNr)+" "+read1file+" extract UMI\n"+l1.strip())
                  raise
@@ -29,6 +34,8 @@ def mergeUmiFiles(read1file, read2file, outmerge, outstats):
            o.write(l2)
         o.write(f2.next())
     o.close()
+    logging.info("extracted last umi lineNr: "+str(lineNr+1))
+    logging.info("\nstats:\n"+umi.writeStatsCounter())
     with open(outstats, "w") as o:
          o.write(umi.writeStatsCounter())
     o.close()

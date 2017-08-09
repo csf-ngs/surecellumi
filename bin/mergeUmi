@@ -1,17 +1,28 @@
 #!/usr/bin/env python
 
-import argparse
+import argparse, logging
 from surecellumi.mergefq import mergeUmiFiles
+from surecellumi import umi
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 parser = argparse.ArgumentParser(description='Merge 2 PE fastq files. Read1 has SureCell UMI.')
-parser.add_argument('--r1', help='path to r1.fq.gz')
-parser.add_argument('--r2', help='path to r2.fq.gz')
-parser.add_argument('--outfq', help='path to resulting fq')
-parser.add_argument('--outstat', help='path to result stats file')
+optional = parser._action_groups.pop() # Edited this line
+required = parser.add_argument_group('required arguments')
+required.add_argument('--r1', help='path to r1.fq.gz or r1.fq', required=True)
+required.add_argument('--r2', help='path to r2.fq.gz or r2.fq', required=True)
+required.add_argument('--outfq', help='path to resulting fq', required=True)
+required.add_argument('--outstat', help='path to result stats file', required=True)
+optional.add_argument('--linker1name', help='name of linker1: L1A=TAGCCATCGCATTGC', default="L1A")
+optional.add_argument('--linker2name', help='name of linker2: L2A=TACCTCTGAGCTGAA, L2B=TACCTCTTATCTCTT', default="L2B")
+parser._action_groups.append(optional) # added this line
 
 
 args = parser.parse_args()
-if args.r1 and args.r2 and args.outfq and args.outstat:
-   mergeUmiFiles(args.r1, args.r2, args.outfq, args.outstat)   
-else:
-   parser.print_help()
+logging.info("starting extracting umis")
+ll1 = umi.getLinker1(args.linker1name)
+ll2 = umi.getLinker2(args.linker2name)
+llinker = umi.getLLinker(args.linker1name, args.linker2name)
+mergeUmiFiles(args.r1, args.r2, args.outfq, args.outstat, ll1, ll2, llinker)
+logging.info("done extracting umis")
+
