@@ -15,6 +15,8 @@ PE = 48
 L1A = "TAGCCATCGCATTGC"
 L2A = "TACCTCTGAGCTGAA"
 L2B = "TACCTCTTATCTCTT"
+PRIME5 = "ACGGAC"
+
 L1s = { "L1A" : L1A }
 L2s = { "L2A" : L2A, "L2B" : L2B }
 
@@ -42,7 +44,7 @@ BARCODESMAP = dict(zip(BARCODES, BARCODES))
 EXTRACTCOUNTER = {"noLL": 0, "noL1orL2": 0,
                 "L1not6fromL2": 0, "noACGorGAC": 0, "extracted": 0}
 BCCOUNTER = {"exact": 0, "mm1": 0, "none": 0}
-
+PRIME5COUNTER = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0}
 
 # mutation rate full linker: length is 6 + 15+6+15 + 6 = 48: 0.05
 # mutation rate linker part: 0.1
@@ -78,6 +80,7 @@ def positionLinker(readPart, ll1, ll2, llinker):
     if full is not None:
         l1 = findLinker(readPart, ll1, 0.1)
         l2 = findLinker(readPart, ll2, 0.1)
+        print(l1, l2)
         l1 = correctLinkerLength(ll1, *l1)
         l2 = correctLinkerLength(ll2, *l2)
         if l1 is not None and l2 is not None:
@@ -94,7 +97,7 @@ def positionLinker(readPart, ll1, ll2, llinker):
 def getUMI(read, linker2End):
     acg = read[(linker2End + 6):(linker2End + 9)]
     gac = read[(linker2End + 17):(linker2End + 20)]
-    if acg == "ACG" and gac == "GAC":
+    if correctPrime5(acg, gac):
         umi = read[(linker2End + 9):(linker2End + 17)]
         return umi
     else:
@@ -124,6 +127,14 @@ def correctBC(bc):
         return distances[0]
 
 
+def correctPrime5(pre, suff):
+    dist = distance.levenshtein(PRIME5, pre+suff)
+    PRIME5COUNTER[dist] += 1
+    if dist <= 2:
+        return True
+    else:
+        return False
+
 def extractBCsUMI(read, ll1, ll2, llinker):
     readPart = read[PS:PE]
     linkers = positionLinker(readPart, ll1, ll2, llinker)
@@ -138,16 +149,10 @@ def formatBC(bc1, bc2, bc3, umi):
     if bc1 is not None and bc2 is not None and bc3 is not None and umi is not None:
        return "BC:"+bc1+bc2+bc3+":UMI:"+umi
     
-def writeExtractCounter():
-    return writeCounter(EXTRACTCOUNTER)
-
-def writeBCCounter():
-    return writeCounter(BCCOUNTER)
-
 def writeCounter(counter):
     result = ""
     for k,v in sorted(counter.items()):
-        result += k+"\t"+str(v)+"\n"
+        result += str(k)+"\t"+str(v)+"\n"
     return result
 
 

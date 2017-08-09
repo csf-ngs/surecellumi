@@ -1,0 +1,2 @@
+run only one test
+python -m pytest tests/test_umi.py -k "test_data"

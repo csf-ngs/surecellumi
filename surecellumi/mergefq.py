@@ -12,7 +12,7 @@ def op(path):
     else:
        return open(path, "r")
 
-def mergeUmiFiles(read1file, read2file, outmerge, outstats, outbc, ll1, ll2, llinker):
+def mergeUmiFiles(read1file, read2file, outmerge, outstats, outbc, outprime5, ll1, ll2, llinker):
     logging.info("extracting umis with: "+ll1+" "+ll2+" "+llinker)
     lineNr = 0
     with op(read1file) as f1, op(read2file) as f2, open(outmerge, "w") as o:
@@ -35,11 +35,14 @@ def mergeUmiFiles(read1file, read2file, outmerge, outstats, outbc, ll1, ll2, lli
         o.write(f2.next())
     o.close()
     logging.info("extracted last umi lineNr: "+str(lineNr+1))
-    logging.info("extractstats:\n"+umi.writeExtractCounter())
-    logging.info("bcstats:\n"+umi.writeBCCounter())
+    logging.info("extract stats:\n"+umi.writeCounter(umi.EXTRACTCOUNTER))
+    logging.info("bc stats:\n"+umi.writeCounter(umi.BCCOUNTER))
+    logging.info("prime5 stats:\n"+umi.writeCounter(umi.PRIME5COUNTER))
     with open(outstats, "w") as o:
-         o.write(umi.writeExtractCounter())
+         o.write(umi.writeCounter(umi.EXTRACTCOUNTER))
     with open(outbc, "w") as o:
-         o.write(umi.writeBCCounter())
+         o.write(umi.writeCounter(umi.BCCOUNTER))
+    with open(outprime5, "w") as o:
+         o.write(umi.writeCounter(umi.PRIME5COUNTER))
     o.close()
 
