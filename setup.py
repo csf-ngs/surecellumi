@@ -15,5 +15,5 @@ setup(name='surecellumi',
       setup_requires=['pytest-runner'],
       tests_requires=['pytest'],
       include_package_data=True,
-      scripts=['bin/mergeUmi','bin/evalAlignment'],
+      scripts=['bin/mergeUmi'],
       zip_safe=False)
