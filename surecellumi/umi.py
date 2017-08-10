@@ -149,7 +149,7 @@ def extractBCsUMI(read, ll1, ll2, llinker):
 
 def formatBC(bc1, bc2, bc3, umi):
     if bc1 is not None and bc2 is not None and bc3 is not None and umi is not None:
-       return "BC:"+bc1+bc2+bc3+":UMI:"+umi
+       return "CELL_"+bc1+"-"+bc2+"-"+bc3+":UMI_"+umi
     
 def writeCounter(counter):
     result = ""

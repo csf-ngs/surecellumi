@@ -9,11 +9,11 @@ setup(name='surecellumi',
       license='GPLv3',
       packages=['surecellumi'],
       install_requires=[
-          'cutadapt',
-          'Distance'
+          'cutadapt>=1.14',
+          'Distance>=0.1.3'
       ],
       setup_requires=['pytest-runner'],
       tests_requires=['pytest'],
       include_package_data=True,
-      scripts=['bin/mergeUmi'],
+      scripts=['bin/mergeUmi','bin/evalAlignment'],
       zip_safe=False)
