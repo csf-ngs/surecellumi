@@ -1,0 +1,2 @@
+cutadapt >= 1.14
+Distance >= 0.1.3
